@@ -33,7 +33,7 @@
       background-color: var(--ink);
       color: var(--parchment);
       font-family: 'IM Fell English', Georgia, serif;
-      padding: 15px;
+      padding: 12px;
       display: flex;
       justify-content: center;
       min-height: 100vh;
@@ -43,16 +43,16 @@
 
     h1, h2, h3, button, .cinzel { font-family: 'Cinzel', serif; letter-spacing: 1px; }
 
-    .header-box { text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-    .header-box h1 { color: var(--candle); font-size: 2.2rem; text-shadow: 0 0 10px rgba(201, 162, 39, 0.2); }
-    .header-box p { font-style: italic; color: #a89f8d; margin-top: 5px; font-size: 0.95rem; }
+    .header-box { text-align: center; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
+    .header-box h1 { color: var(--candle); font-size: 1.8rem; text-shadow: 0 0 10px rgba(201, 162, 39, 0.2); }
+    .header-box p { font-style: italic; color: #a89f8d; margin-top: 4px; font-size: 0.85rem; }
 
     .card {
       background: var(--umber);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 16px;
-      margin-bottom: 15px;
+      padding: 14px;
+      margin-bottom: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
@@ -60,11 +60,12 @@
       background: var(--wax);
       color: var(--parchment);
       border: 1px solid #a83b3b;
-      padding: 10px 16px;
+      padding: 10px 14px;
       border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
       transition: all 0.2s;
+      white-space: nowrap;
     }
     .btn:hover { background: #a63535; }
     .btn-gold { background: var(--candle); color: #000; border-color: #e6bd3b; }
@@ -80,7 +81,16 @@
       width: 100%;
     }
 
-    .tone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+    .flex-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .flex-grow { flex: 1; min-width: 140px; }
+
+    .tone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 12px 0; }
     .tone-card {
       border: 1px solid var(--border);
       padding: 10px;
@@ -100,26 +110,34 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .log-box {
-      height: 380px;
+      height: 360px;
       overflow-y: auto;
       background: var(--ink);
       border: 1px solid var(--border);
-      padding: 15px;
+      padding: 12px;
       border-radius: 4px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 15px;
+      gap: 10px;
+      margin-bottom: 12px;
     }
-    .log-entry { padding: 10px; border-radius: 4px; line-height: 1.5; font-size: 1.05rem; }
+    .log-entry { padding: 10px; border-radius: 4px; line-height: 1.4; font-size: 0.95rem; }
     .log-entry.dm { border-left: 3px solid var(--candle); background: #1f1812; }
     .log-entry.player { border-left: 3px solid #4a6b7c; background: #141b21; }
-    .log-entry.sys { border-left: 3px solid var(--wax); background: #211214; font-style: italic; font-size: 0.95rem; }
+    .log-entry.sys { border-left: 3px solid var(--wax); background: #211214; font-style: italic; font-size: 0.88rem; }
 
-    .flex-row { display: flex; gap: 10px; align-items: center; }
+    /* Mobile Responsive Optimizations */
+    @media (max-width: 600px) {
+      .header-box h1 { font-size: 1.5rem; }
+      .mobile-stack { flex-direction: column; align-items: stretch; }
+      .mobile-stack > * { width: 100% !important; }
+      .btn { text-align: center; }
+    }
   </style>
 </head>
 <body>
@@ -358,34 +376,38 @@ Narrate evocatively in 2-4 sentences.`;
 
           {/* API Key Configuration */}
           <div className="card">
-            <div className="flex-row">
+            <div className="flex-row mobile-stack">
               <label style={{ minWidth: '80px' }}><strong>Gemini Key:</strong></label>
-              <input
-                type="password"
-                placeholder="Paste Gemini API Key..."
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-              />
+              <div className="flex-grow">
+                <input
+                  type="password"
+                  placeholder="Paste Gemini API Key..."
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                />
+              </div>
               <button className="btn" onClick={saveKey}>{isKeySaved ? 'Saved ✓' : 'Save Key'}</button>
             </div>
           </div>
 
           {/* PeerJS Room Bar */}
           <div className="card">
-            <div className="flex-row" style={{ justifyContent: 'space-between' }}>
+            <div className="flex-row mobile-stack" style={{ justifyContent: 'space-between' }}>
               <div><strong>Status:</strong> <span style={{ color: 'var(--candle)' }}>{netStatus}</span></div>
+              
               {isHost && !roomCode && (
-                <button className="btn" onClick={initializeHostRoom}>🌐 Host Table Someone Can Join</button>
+                <button className="btn" onClick={initializeHostRoom}>🌐 Host Table</button>
               )}
+
               {!roomCode && isHost && (
-                <div className="flex-row">
+                <div className="flex-row mobile-stack">
                   <input
                     type="text"
                     placeholder="Room Code"
                     maxLength={4}
                     value={joinCode}
                     onChange={(e) => setJoinCode(e.target.value)}
-                    style={{ width: '100px', textTransform: 'uppercase' }}
+                    style={{ width: '110px' }}
                   />
                   <button className="btn" onClick={joinHostRoom}>Join Table</button>
                 </div>
@@ -407,7 +429,7 @@ Narrate evocatively in 2-4 sentences.`;
                       onClick={() => setSelectedTone(t.id)}
                     >
                       <strong style={{ color: 'var(--candle)' }}>{t.label}</strong>
-                      <div style={{ fontSize: '0.85rem', color: '#a89f8d', marginTop: '4px' }}>{t.desc}</div>
+                      <div style={{ fontSize: '0.82rem', color: '#a89f8d', marginTop: '4px' }}>{t.desc}</div>
                     </div>
                   ))}
                 </div>
@@ -428,22 +450,24 @@ Narrate evocatively in 2-4 sentences.`;
                   ))}
                 </div>
 
-                <div className="flex-row" style={{ marginTop: '15px' }}>
-                  <input
-                    type="text"
-                    placeholder="Hero Name..."
-                    value={heroName}
-                    onChange={(e) => setHeroName(e.target.value)}
-                  />
-                  <select value={heroClass} onChange={(e) => setHeroClass(e.target.value)} style={{ width: '140px' }}>
+                <div className="flex-row mobile-stack" style={{ marginTop: '15px' }}>
+                  <div className="flex-grow">
+                    <input
+                      type="text"
+                      placeholder="Hero Name..."
+                      value={heroName}
+                      onChange={(e) => setHeroName(e.target.value)}
+                    />
+                  </div>
+                  <select value={heroClass} onChange={(e) => setHeroClass(e.target.value)} style={{ width: '130px' }}>
                     {CLASSES.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <button className="btn" onClick={addHero}>+ Add Hero</button>
                 </div>
               </div>
 
-              <div style={{ textAlignment: 'center', marginTop: '20px' }}>
-                <button className="btn btn-gold" style={{ width: '100%', padding: '15px', fontSize: '1.2rem' }} onClick={startGame}>
+              <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                <button className="btn btn-gold" style={{ width: '100%', padding: '14px', fontSize: '1.1rem' }} onClick={startGame}>
                   ✨ BEGIN THE ADVENTURE
                 </button>
               </div>
@@ -452,7 +476,7 @@ Narrate evocatively in 2-4 sentences.`;
             /* Active Play Screen */
             <div>
               {/* Hero Stat Tracker */}
-              <div className="card flex-row" style={{ flexWrap: 'wrap', justifyContent: 'space-around' }}>
+              <div className="card flex-row" style={{ justifyContent: 'space-around' }}>
                 {party.map(hero => (
                   <div
                     key={hero.name}
@@ -481,17 +505,19 @@ Narrate evocatively in 2-4 sentences.`;
               </div>
 
               {/* Action Input Bar */}
-              <div className="card flex-row">
+              <div className="card flex-row mobile-stack">
                 <select value={activeHero} onChange={(e) => setActiveHero(e.target.value)} style={{ width: '130px' }}>
                   {party.map(h => <option key={h.name} value={h.name}>{h.name}</option>)}
                 </select>
-                <input
-                  type="text"
-                  placeholder={`What does ${activeHero} do?`}
-                  value={actionText}
-                  onChange={(e) => setActionText(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && submitAction()}
-                />
+                <div className="flex-grow">
+                  <input
+                    type="text"
+                    placeholder={`What does ${activeHero} do?`}
+                    value={actionText}
+                    onChange={(e) => setActionText(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && submitAction()}
+                  />
+                </div>
                 <button className="btn btn-gold" onClick={submitAction}>Take Action</button>
               </div>
             </div>
